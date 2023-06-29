@@ -1,0 +1,124 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ClientBar {
+  id_cli    Int        @id @default(autoincrement())
+  name_cli  String
+  ap_cli    String
+  tel_cli   String
+  email_cli String
+  dir_cli   String
+  orderbar  OrderBar[]
+}
+
+model Store {
+  id_store    Int     @id @default(autoincrement())
+  name_store  String
+  tel_store   String
+  email_store String
+  dir_store   String
+  rfc_store   String
+  staff       Staff[]
+  stock       Stock[]
+}
+
+model Staff {
+  id_staff         Int        @id @default(autoincrement())
+  name_staff       String
+  ap_staff         String
+  tel_staff        String
+  email_staff      String
+  dir_staff        String
+  curp_staff       String
+  rfc_staff        String
+  type_staff       String
+  active_staff     Boolean
+  date_enter_staff DateTime
+  id_store2        Int
+  store            Store      @relation(fields: [id_store2], references: [id_store])
+  orderbar         OrderBar[]
+}
+
+model Provider {
+  id_pro          Int       @id @default(autoincrement())
+  name_pro        String
+  tel_pro         String
+  email_pro       String
+  dir_pro         String
+  rfc_pro         String
+  date_of_service DateTime
+  product         Product[]
+}
+
+model Stock {
+  id_stock       Int       @id @default(autoincrement())
+  quantity_stock Int
+  id_store1      Int
+  store          Store     @relation(fields: [id_store1], references: [id_store])
+  product        Product[]
+}
+
+model OrderBar {
+  id_ord    Int        @id @default(autoincrement())
+  total_ord Float
+  iva_ord   Float
+  date_ord  DateTime
+  id_staff1 Int
+  id_cli1   Int
+  staff     Staff      @relation(fields: [id_staff1], references: [id_staff])
+  clientbar ClientBar  @relation(fields: [id_cli1], references: [id_cli])
+  included  Included[]
+}
+
+model Category {
+  cat_id   Int       @id @default(autoincrement())
+  type_cat String
+  des_cat  String
+  product  Product[]
+}
+
+model Product {
+  id_product    Int        @id @default(autoincrement())
+  nom_product   String
+  desc_product  String
+  price_product Float
+  id_stock1     Int
+  id_pro1       Int
+  cat_id1       Int
+  stock         Stock      @relation(fields: [id_stock1], references: [id_stock])
+  product       Provider   @relation(fields: [id_pro1], references: [id_pro])
+  category      Category   @relation(fields: [cat_id1], references: [cat_id])
+  included      Included[]
+}
+
+model Included {
+  list_price_include Float
+  quantity_includ    Float
+  promo              String?
+  id_product1        Int
+  id_ord1            Int
+  product            Product  @relation(fields: [id_product1], references: [id_product])
+  orderbar           OrderBar @relation(fields: [id_ord1], references: [id_ord])
+
+  @@unique([id_product1, id_ord1])
+}
+
+model detalles_prov5 {
+  id_detalle    Int    @id
+  nom_product   String
+  price_product Float
+  type_cat      String
+
+  @@map(name: "detalles_prov")
+}
+model Vista_Product {
+  id_product Int @id
+  nom_product String
+  desc_product String
+}
